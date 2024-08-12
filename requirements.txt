@@ -1,0 +1,10 @@
+streamlit
+PyPDF2
+langchain
+langchain-core
+langchain-community
+langchain-anthropic
+langchain-openai
+python-dotenv
+faiss-cpu
+spacy
