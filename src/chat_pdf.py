@@ -77,16 +77,19 @@ def get_conversational_chain(tools: Tool, ques: str, chat_history: str) -> str:
         "agent_scratchpad": ""
     }
     
-    # Invoke the agent with the user question
+    # Invoke the agent with the user question 
     try:
-        response = agent(inputs,handle_parsing_errors=True)
-        print(response)
-        st.write("Reply: ", response['output'])
-        return response['output']  # Return only the output string
+        response = agent(inputs)
+        if isinstance(response, dict) and 'output' in response:
+            print(response)           
+            st.write("Reply: ", response['output'])
+            return response['output']
+        else:
+            st.error("Unexpected response format.")
+            return "Unexpected response format."
     except Exception as e:
         st.error(f"An error occurred: {e}")
-        return (f"An error occurred: {e}")
-    
+        return f"An error occurred: {e}"
 
 
 def user_input(user_question):
