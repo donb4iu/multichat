@@ -146,7 +146,7 @@ def main():
                 vector_store(text_chunks)
                 st.success("Done")
                 
-    st.sidebar.markdown("<br />".join(app['history'])+"<br /><br />", unsafe_allow_html=True)
+        st.sidebar.markdown("<br />".join(app['history'])+"<br /><br />", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
