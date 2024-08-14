@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 from langchain_community.llms import Ollama  # Import Ollama for llama3
 from langchain.agents import initialize_agent, Tool
 
-
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
@@ -42,7 +41,7 @@ def vector_store(text_chunks):
     vector_store.save_local("faiss_db")
 
 
-def get_conversational_chain(tools: Tool, ques: str, chat_history: str) -> str:
+def get_conversational_chain(tools, ques, chat_history):
     #os.environ["ANTHROPIC_API_KEY"]=os.getenv["ANTHROPIC_API_KEY"]
     #llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0, api_key=os.getenv("ANTHROPIC_API_KEY"),verbose=True)
     #llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, api_key="")
@@ -72,7 +71,7 @@ def get_conversational_chain(tools: Tool, ques: str, chat_history: str) -> str:
     
     # Ensure all required keys are provided
     inputs = {
-        "chat_history": chat_history,
+        "chat_history": "",
         "input": ques,
         "agent_scratchpad": ""
     }
@@ -119,7 +118,6 @@ def user_input(user_question):
 def main():
     st.set_page_config("Chat PDF")
     st.header("RAG based Chat with PDF")
-    app = st.session_state
     
     # Initialize session state if not already present
     if 'history' not in st.session_state:
@@ -132,8 +130,8 @@ def main():
         with st.spinner("Processing your question..."):
             resp = user_input(user_question)
             ### Show sidebar history
-        app['history'].append("😎: "+user_question)
-        app['history'].append("👾: "+resp)
+        st.session_state['history'].append("😎: "+user_question)
+        st.session_state['history'].append("👾: "+resp)
         
 
 
@@ -146,7 +144,7 @@ def main():
                 vector_store(text_chunks)
                 st.success("Done")
                 
-        st.sidebar.markdown("<br />".join(app['history'])+"<br /><br />", unsafe_allow_html=True)
+        st.sidebar.markdown("<br />".join(st.session_state['history'])+"<br /><br />", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
