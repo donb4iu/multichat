@@ -8,6 +8,18 @@ Langchain &amp; Streamlit
 
 ## Requirements
 
+**Note** - updated to use llama3 instead of openAI
+
+## Docker
+
+docker buildx create --use --name temp-builder
+
+docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t donb4iu/chatpdf --push .
+
+docker buildx rm temp-builder
+
+## Setup
+
 ### #( 08/12/24@ 6:26PM )( donbuddenbaum@donbs-imac ):~
    pip install PyPDF2
 
