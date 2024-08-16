@@ -22,4 +22,4 @@ COPY . /app/
 EXPOSE 8501
 
 # Define the command to run the application
-CMD ["streamlit", "run", "chat_pdf.py"]
+CMD ["streamlit", "run", "app/chat_pdf.py"]

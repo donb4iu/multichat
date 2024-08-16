@@ -12,11 +12,15 @@ Langchain &amp; Streamlit
 
 ## Docker
 
+```
 docker buildx create --use --name temp-builder
 
 docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t donb4iu/chatpdf --push .
 
 docker buildx rm temp-builder
+
+docker run -p <8501>:<8501> donb4iu/chatpdf
+```
 
 ## Setup
 
