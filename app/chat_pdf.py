@@ -1,23 +1,27 @@
+import os
+
 import streamlit as st
-from PyPDF2 import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_core.prompts import ChatPromptTemplate
+from langchain.agents import Tool, initialize_agent
+
 #from langchain_community.embeddings.spacy_embeddings import SpacyEmbeddings
 from langchain.embeddings import OllamaEmbeddings
-from langchain_community.vectorstores import FAISS
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.tools.retriever import create_retriever_tool
+
 #from dotenv import load_dotenv
 #from langchain_anthropic import ChatAnthropic
 #from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 #from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_community.llms import Ollama  # Import Ollama for llama3
-from langchain.agents import initialize_agent, Tool
+from langchain_community.vectorstores import FAISS
+from langchain_core.prompts import ChatPromptTemplate
+from PyPDF2 import PdfReader
 
-import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 #embeddings = SpacyEmbeddings(model_name="en_core_web_sm")
-embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model="nomic-embed-text")
+#embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model="nomic-embed-text")
+embeddings = OllamaEmbeddings(base_url="http://192.168.2.39:11434", model="nomic-embed-text")
 
 def pdf_read(pdf_doc):
     text = ""
@@ -46,7 +50,7 @@ def get_conversational_chain(tools, ques, chat_history):
     #llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0, api_key=os.getenv("ANTHROPIC_API_KEY"),verbose=True)
     #llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, api_key="")
     # Initialize Ollama with the llama3 model
-    llm = Ollama(base_url='http://localhost:11434', model="llama3")
+    llm = Ollama(base_url='http://192.168.2.39:11434', model="llama3.1")
     prompt = ChatPromptTemplate.from_messages(
     [
         (
