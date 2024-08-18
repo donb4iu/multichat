@@ -4,7 +4,11 @@ Langchain &amp; Streamlit
 
 ## References
 
-[Building a Multi PDF RAG Chatbot: Langchain, Streamlit with code](https://medium.com/gopenai/building-a-multi-pdf-rag-chatbot-langchain-streamlit-with-code-d21d0a1cf9e5)
+- [Building a Multi PDF RAG Chatbot: Langchain, Streamlit with code](https://medium.com/gopenai/building-a-multi-pdf-rag-chatbot-langchain-streamlit-with-code-d21d0a1cf9e5)
+
+- [Building a Multi-LLM Chatbot with Langchain: OpenAI and Ollama](https://medium.com/@gayani.parameswaran/building-a-multi-llm-chatbot-with-langchain-openai-and-ollama-e4836b5160f7)
+
+- [LangChain is a framework for developing applications powered by large language models (LLMs).](https://python.langchain.com/v0.2/docs/introduction/)
 
 ## Requirements
 
