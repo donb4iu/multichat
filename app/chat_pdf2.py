@@ -16,8 +16,8 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 #embeddings = SpacyEmbeddings(model_name="en_core_web_sm")
-embeddings = OllamaEmbeddings(base_url="http://192.168.2.39:11434", model="nomic-embed-text")
-
+#embeddings = OllamaEmbeddings(base_url="http://192.168.2.39:11434", model="nomic-embed-text")
+embeddings = OllamaEmbeddings(base_url="http://192.168.2.39:11434", model="mxbai-embed-large")
 
 
 def pdf_read(pdf_doc):

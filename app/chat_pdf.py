@@ -1,5 +1,5 @@
 import os
-
+from tqdm import tqdm
 import streamlit as st
 from langchain.agents import Tool, initialize_agent
 
@@ -21,11 +21,11 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 #embeddings = SpacyEmbeddings(model_name="en_core_web_sm")
 #embeddings = OllamaEmbeddings(base_url="http://localhost:11434", model="nomic-embed-text")
-embeddings = OllamaEmbeddings(base_url="http://192.168.2.39:11434", model="nomic-embed-text")
+embeddings = OllamaEmbeddings(base_url="http://192.168.2.39:11434", model="mxbai-embed-large")
 
 def pdf_read(pdf_doc):
     text = ""
-    for pdf in pdf_doc:
+    for pdf in tqdm(pdf_doc, desc="Processing PDF"):
         pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
             text += page.extract_text()
@@ -34,7 +34,7 @@ def pdf_read(pdf_doc):
 
 
 def get_chunks(text):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=500)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     chunks = text_splitter.split_text(text)
     return chunks
 
@@ -50,7 +50,7 @@ def get_conversational_chain(tools, ques, chat_history):
     #llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0, api_key=os.getenv("ANTHROPIC_API_KEY"),verbose=True)
     #llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, api_key="")
     # Initialize Ollama with the llama3 model
-    llm = Ollama(base_url='http://192.168.2.39:11434', model="llama3.1")
+    llm = Ollama(base_url='http://192.168.2.39:11434', model="mistral-nemo:latest")
     prompt = ChatPromptTemplate.from_messages(
     [
         (
