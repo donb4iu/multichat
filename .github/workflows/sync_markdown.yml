@@ -1,0 +1,112 @@
+name: Sync Files
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-files:
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      REPO_URL: ${{ secrets.NEW_REPO_URL }}
+      REPO_NAME: ${{ github.repository }}
+      BRANCH_NAME: update-files-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.API_TOKEN_GITHUB }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout originating repository
+      uses: actions/checkout@v4
+      id: Detected_push
+      with:
+        fetch-depth: 0  # Ensure full history is fetched
+
+    - name: Read publish.txt and find specified files
+      id: Get_markdown
+      run: |
+        #!/bin/bash
+        set -e
+        mkdir -p temp_files
+
+        # Read file types from publish.txt and find matching files
+        while IFS= read -r line; do
+          # Extract directory and file types
+          IFS=' ' read -r dir filetypes <<< "$line"
+          if [ -d "$dir" ]; then
+            echo "Processing directory: $dir"
+            for ext in $filetypes; do
+              echo "Searching for files with pattern: $ext in $dir"
+              find "$dir" -type f -name "$ext" -print0 | while IFS= read -r -d '' file; do
+                dir_name=$(dirname "$file")
+                base_dir=$(basename "$dir_name")
+                mkdir -p "temp_files/$base_dir"
+                echo "Copying file: $file to temp_files/$base_dir/"
+                cp "$file" "temp_files/$base_dir/"
+              done
+            done
+          else
+            echo "Directory not found: $dir"
+          fi
+        done < publish.txt
+
+    - name: Create and Push New Branch to Target Repository
+      id: Copy_markdown
+      run: |
+        #!/bin/bash
+        set -e
+
+        # Clone the target repository
+        git clone "$REPO_URL" target_repo
+        cd target_repo
+
+        # Create a new branch
+        #git checkout -b "$BRANCH_NAME"
+
+        # Define target directories
+        TARGET_DIR="markdown/${REPO_NAME}"
+
+        # Create necessary directories in the target repository
+        mkdir -p "$TARGET_DIR"
+
+        # Sync the directory structure
+        rsync -av --delete "../temp_files/" "$TARGET_DIR/"
+
+        ls -R "$TARGET_DIR"
+
+    - name: Publish markdown
+      uses: cpina/github-action-push-to-another-repository@main
+      id: Publish_markdown
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+      with:
+        source-directory: 'target_repo/markdown'
+        target-directory: "markdown"
+        destination-github-username: 'donb4iu'
+        destination-repository-name: 'testarget'
+        target-branch: 'update-files-${{ github.run_id }}'
+        commit-message: 'Sync files to repository testarget'
+        user-email: dbuddenbaum@gmail.com
+        create-target-branch-if-needed: true
+
+
+    #- name: Commit markdown
+    #  id: Committing_markdown
+    #  run: |
+    #    git config --local user.email "dbuddenbaum@gmail.com"
+    #    git config --local user.name "donb4iu"
+    #    git add -A
+    #    git commit -a -m 'commit copied markdown to repository $REPO_NAME branch "$BRANCH_NAME'
+
+    #- name: Force push markdown to markdown directory
+    #  uses: ad-m/github-push-action@master
+    #  id: Pushing_markdown
+    #  with:
+    #    github_token: ${{ secrets.API_TOKEN_GITHUB }}
+    #    branch: BRANCH_NAME
+
+    - name: Notify Slack - Push changes
+      uses: act10ns/slack@v2
+      with:
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+      if: always()
